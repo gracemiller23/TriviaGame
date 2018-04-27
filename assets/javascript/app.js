@@ -1,7 +1,12 @@
 
+//----------------------------variables-------------------------------
+
 var questionCount = 0;
-var number = 45;
+var number = 30;
 var intervalId;
+var answersCorrect = 0;
+var answersWrong = 0;
+
 
 var questions = ["How many times did Rachel and Ross try to get together (whether they succeeded or not)?", 
 "Who was Joey's character on Days of Our Lives?", "Who did Rachel leave at the altar in season 1?", 
@@ -27,8 +32,32 @@ var questionGifs = [["https://media.giphy.com/media/V2CPDf8e6zs6k/giphy.gif", "h
 ["https://media.giphy.com/media/ld1RKulOqeeaI/giphy.gif", "https://media.giphy.com/media/L20E2bh3ntSCc/giphy.gif"],
 ["https://media.giphy.com/media/HGEiJZcovtb1e/giphy.gif", "https://media.giphy.com/media/aj6lvT96A8xLq/giphy.gif"]];
 
+//---------------------------------timer functions ---------------------------
+
+function run() {
+    intervalId = setInterval(decrement, 1000);
+  };
+
+  function decrement() {
+
+    number--;
+
+    $("#show-number").html("<h2>" + number + " seconds left! </h2>");
+
+    if (number === 0) {
+      stop();
+      timesUp();
+    };
+  };
+
+  function stop() {
+    clearInterval(intervalId);
+  };
+
+//-----------------------------------Game Play and Outcomes--------------------------  
+
 function newQuestionForm(){
-    number = 45;
+    number=30;
     $("#show-number").show();
     run();
     $("div.results").empty().hide();
@@ -38,10 +67,12 @@ function newQuestionForm(){
     "</input><br><input type='radio' value='b' class='answer'> b. " + 
     answerChoices[questionCount][1] + "</input><br><input type='radio' value='c' class='answer'> c. " +  
     answerChoices[questionCount][2] + "</input><br><input type='radio' value='d' class='answer'> d. " + 
-    answerChoices[questionCount][3] + "</input>" );
+    answerChoices[questionCount][3] + "</input>");
+    
 }
 
 function youAreCorrect(){
+    answersCorrect++;
     setTimeout(function(){
         $("#show-number").hide();
         $("form.qForm").hide();
@@ -52,13 +83,16 @@ function youAreCorrect(){
         $("div.results").hide();
         $("form.qForm").show();
         questionCount++;
-        newQuestionForm();
-        }, 5000);
-
-}
+        if (questionCount < questions.length){
+            newQuestionForm();
+            }else{
+                gameReset();
+            }
+        }, 5000); 
+};
 
 function youAreWrong(){
-   
+    answersWrong++;
     setTimeout(function(){ 
         $("#show-number").hide();
     $("div.results").show().html("<h2> Wrong! </h2> <h3>The correct answer is: " + 
@@ -69,12 +103,16 @@ function youAreWrong(){
     setTimeout(function(){
         $("div.results").hide();
         questionCount++;
-        newQuestionForm();
+        if (questionCount < questions.length){
+            newQuestionForm();
+            }else{
+                gameReset();
+            }
         }, 6000);
-}
+};
 
 function timesUp(){
-   
+    answersWrong++;
     setTimeout(function(){ 
         $("#show-number").hide();
     $("div.results").show().html("<h2> Time's up! </h2> <h3>The correct answer is: " + 
@@ -85,70 +123,55 @@ function timesUp(){
     setTimeout(function(){
         $("div.results").hide();
         questionCount++;
+        if (questionCount < questions.length){
         newQuestionForm();
+        }else{
+            gameReset();
+        }
         }, 6000);
-}
+};
 
-//click events
+//------------------------game reset---------------------
+
+function gameReset(){
+    var score = Math.floor((answersCorrect / 7) * 100);
+    questionCount = 0;
+    $("#show-number").hide();
+    $("div.results").hide();
+    $("form.qForm").hide()
+    $("div.start-page").show().html("<h1>Try again!</h1><h3>You got " + 
+    answersWrong+ " answers wrong and " + answersCorrect + " answers right, for a score of " + 
+    score + "%. <button id='start'> Start </button>");
+    setTimeout(function(){
+        answersCorrect = 0;
+        answersWrong = 0;
+    }, 1000);
+};
+
+//-------------------------click events-----------------------
 $(document).ready(function(){
 
 $("body").on("click", "button", function(){
-    console.log("clicked");
     $("div.start-page").html("<h2>Okay, let's get started!</h2>")
     setTimeout(function(){
         $("div.start-page").hide();
         newQuestionForm();
     }, 1000);
 
-
 }).on("click", "input", function(){
     var userInput = $(this).val();
-    console.log(userInput);
-    var correctAnswer = $("input").text(rightAnswers[questionCount]);//may NOT actually work ... check later
-    
+    var correctAnswer = $("input").text(rightAnswers[questionCount]);
+    stop();
     if (number > 0 && userInput === rightAnswers[questionCount]){
         youAreCorrect();
     }else if (number > 0){
         youAreWrong(userInput);
-    }else {
-        timesUp();
     }
 
 });
 
 });
 
-//reincorporate timer
-//game reset
-
-//---------------------------------timer functions ---------------------------
-// else{
-//     $("form.qForm").hide()
-//     $("div.results").show().html("<h3> Time's up! </h3> <p>The correct answer is: " + correctAnswer + "</p> <img src= '" + 
-//     questionGifs[questionCount][1] + "' alt='gif from the show, friends' class='result-image'>").delay(6000);
-// }
 
 
 
-    function run() {
-      intervalId = setInterval(decrement, 1000);
-    }
-
-    function decrement() {
-
-      number--;
-
-      $("#show-number").html("<h2>" + number + " seconds left! </h2>");
-
-      if (number === 0) {
-
-        stop();
-
-      
-      }
-    }
-
-    function stop() {
-
-      clearInterval(intervalId);
-    }
