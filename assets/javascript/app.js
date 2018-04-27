@@ -1,5 +1,7 @@
-var timeCounter = 30;
+
 var questionCount = 0;
+var number = 45;
+var intervalId;
 
 var questions = ["How many times did Rachel and Ross try to get together (whether they succeeded or not)?", 
 "Who was Joey's character on Days of Our Lives?", "Who did Rachel leave at the altar in season 1?", 
@@ -26,9 +28,10 @@ var questionGifs = [["https://media.giphy.com/media/V2CPDf8e6zs6k/giphy.gif", "h
 ["https://media.giphy.com/media/HGEiJZcovtb1e/giphy.gif", "https://media.giphy.com/media/aj6lvT96A8xLq/giphy.gif"]];
 
 function newQuestionForm(){
-    //hide results div
+    number = 45;
+    $("#show-number").show();
+    run();
     $("div.results").empty().hide();
-
     //display the question form with the next question
     $("form.qForm").show().html("<h3>" + questions[questionCount] + 
     "</h3><input type='radio' value='a' class='answer'> a. " + answerChoices[questionCount][0] + 
@@ -40,11 +43,11 @@ function newQuestionForm(){
 
 function youAreCorrect(){
     setTimeout(function(){
+        $("#show-number").hide();
         $("form.qForm").hide();
         $("div.results").show().html("<h2> You are correct! </h2> <img src= '" + 
         questionGifs[questionCount][0] + "' alt='gif from the show, friends' class='result-image'>");
         }, 1000);
-    
         setTimeout(function(){
         $("div.results").hide();
         $("form.qForm").show();
@@ -57,7 +60,24 @@ function youAreCorrect(){
 function youAreWrong(){
    
     setTimeout(function(){ 
+        $("#show-number").hide();
     $("div.results").show().html("<h2> Wrong! </h2> <h3>The correct answer is: " + 
+    rightAnswers[questionCount] + "</h3> <img src= ' " + questionGifs[questionCount][1] + 
+    "' alt='gif from the show, friends' class='result-image'>");
+    }, 1000);
+
+    setTimeout(function(){
+        $("div.results").hide();
+        questionCount++;
+        newQuestionForm();
+        }, 6000);
+}
+
+function timesUp(){
+   
+    setTimeout(function(){ 
+        $("#show-number").hide();
+    $("div.results").show().html("<h2> Time's up! </h2> <h3>The correct answer is: " + 
     rightAnswers[questionCount] + "</h3> <img src= ' " + questionGifs[questionCount][1] + 
     "' alt='gif from the show, friends' class='result-image'>");
     }, 1000);
@@ -86,10 +106,12 @@ $("body").on("click", "button", function(){
     console.log(userInput);
     var correctAnswer = $("input").text(rightAnswers[questionCount]);//may NOT actually work ... check later
     
-    if (userInput === rightAnswers[questionCount]){
+    if (number > 0 && userInput === rightAnswers[questionCount]){
         youAreCorrect();
-    }else {
+    }else if (number > 0){
         youAreWrong(userInput);
+    }else {
+        timesUp();
     }
 
 });
@@ -105,3 +127,28 @@ $("body").on("click", "button", function(){
 //     $("div.results").show().html("<h3> Time's up! </h3> <p>The correct answer is: " + correctAnswer + "</p> <img src= '" + 
 //     questionGifs[questionCount][1] + "' alt='gif from the show, friends' class='result-image'>").delay(6000);
 // }
+
+
+
+    function run() {
+      intervalId = setInterval(decrement, 1000);
+    }
+
+    function decrement() {
+
+      number--;
+
+      $("#show-number").html("<h2>" + number + " seconds left! </h2>");
+
+      if (number === 0) {
+
+        stop();
+
+      
+      }
+    }
+
+    function stop() {
+
+      clearInterval(intervalId);
+    }
