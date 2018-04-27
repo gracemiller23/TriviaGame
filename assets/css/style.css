@@ -3,11 +3,12 @@ body{
     font-family: 'Inconsolata', sans-serif;
     font-size: 18px;
     font-weight: bolder;
+    background-color: #9687af;
     background-image: url(../images/backgroundimage.png);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center; 
-    background-size:100% auto;
+    background-size:auto 100%;
 }
 
 h1{
@@ -72,8 +73,27 @@ header img{
 .result-image{
     margin: 0 auto;
     display:block;
+    max-width:98%;
 }
 
 .qForm{
+
+}
+
+@media only screen and (max-width: 600px) {
+
+    body {
+        background-image: url("../images/backgroundimage_m.png");
+        background-size:100% auto;
+    }
+    h1{
+        font-size:3em;
+    }
+    h2{
+        font-size:2.5em;
+    }
+    h3{
+        font-size:1.5em;
+    }
 
 }
